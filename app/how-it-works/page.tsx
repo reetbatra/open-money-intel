@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
+import { VideoEmbed } from "@/components/video-embed";
 
 export default function HowItWorks() {
   return (
@@ -14,6 +15,10 @@ export default function HowItWorks() {
         positioning into a full asset package, and a measurement loop that feeds channel outcomes back
         into the positioning YAML as concrete edit suggestions.
       </p>
+
+      <section className="mt-10">
+        <VideoEmbed url={process.env.NEXT_PUBLIC_LOOM_URL} />
+      </section>
 
       <section className="mt-12">
         <h2 className="text-xs uppercase tracking-[0.18em] text-zinc-500 mb-5">System map</h2>
