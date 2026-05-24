@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export function RegenerateButton({ hasCached }: { hasCached: boolean }) {
+export function RegenerateButton({ hasCached, sourceId }: { hasCached: boolean; sourceId: string }) {
   const router = useRouter();
   const [busy, setBusy] = useState<"ai" | "fallback" | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
@@ -12,9 +12,9 @@ export function RegenerateButton({ hasCached }: { hasCached: boolean }) {
     setBusy(mode);
     setMsg(null);
     try {
-      const res = await fetch(`/api/launch/generate?force=1${mode === "fallback" ? "&fallback=1" : ""}`, {
-        method: "POST",
-      });
+      const qs = new URLSearchParams({ force: "1", source: sourceId });
+      if (mode === "fallback") qs.set("fallback", "1");
+      const res = await fetch(`/api/launch/generate?${qs}`, { method: "POST" });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error ?? "Generation failed");
       if (data.warning) setMsg(`Used fallback: ${data.warning}`);

@@ -1,0 +1,199 @@
+meta:
+  version: "1"
+  author: "Open Money Intel · competitor positioning source (illustrative)"
+  updated: "2026-05-24"
+
+platform:
+  name: Circle Stablecoin Network
+  category: "Regulated stablecoin issuer + transport"
+  one_liner: "Issuer-grade USDC and EURC plus the rails to move them — under one regulated entity."
+  positioning_statement: |
+    For fintechs, PSPs, and enterprises that need a regulated dollar with a single counterparty,
+    the Circle Stablecoin Network combines USDC and EURC issuance, CCTP burn-mint transport,
+    and Circle Mint banking integration under one regulated entity (NYDFS, MiCA).
+    Unlike multi-chain platforms (Polygon, Solana) that compose third-party assets and infra,
+    Circle is the issuer — the dollar is theirs, the redemption is theirs, the compliance posture
+    is theirs end-to-end.
+  bundled_value_prop: |
+    Circle is the only stack where the asset, the transport, and the on/off-ramp are all the same
+    counterparty. Fintechs and PSPs who care about a single regulated relationship for stablecoin
+    exposure get one contract, one compliance review, one redemption guarantee — instead of
+    composing an issuer, a chain, a bridge, and a banking partner.
+  icp_segments:
+    - id: fintech
+      label: Regulated fintechs
+      description: "Fintechs needing a single regulated counterparty for stablecoin issuance, custody, and redemption."
+    - id: psp
+      label: PSPs & merchant acquirers
+      description: "Payment service providers integrating stablecoin acceptance and settlement into existing card-class flows."
+    - id: enterprise
+      label: Enterprise treasury
+      description: "Corporates running cross-border treasury, payouts, and FX hedging on regulated dollar rails."
+    - id: developer
+      label: Web3 builders
+      description: "App teams that want USDC/EURC primitives without operating their own treasury or compliance stack."
+  tone:
+    voice:
+      - "regulated-credible"
+      - "banking-grade-clarity"
+      - "compliance-first"
+      - "ships at 95%"
+    forbidden_words:
+      - "unlocks"
+      - "revolutionary"
+      - "degens"
+      - "to the moon"
+      - "next-generation"
+      - "web3-native"
+      - "leverage"
+      - "synergy"
+    reference_voice: |
+      Brex docs meets Federal Reserve speech. Calm, precise, regulator-readable.
+
+products:
+  - id: usdc
+    name: USDC
+    category: "Regulated dollar stablecoin"
+    status: ga
+    one_liner: "1:1 USD-backed digital dollar, attested monthly, redeemable at par with Circle."
+    job_to_be_done: |
+      Hold and move dollars onchain with a regulated issuer behind every token, attested reserves,
+      and same-day fiat redemption through Circle Mint — so treasury, audit, and compliance
+      all sign off on a single counterparty.
+    icps: ["fintech", "psp", "enterprise"]
+    differentiators:
+      - "Regulated issuer — NYDFS-licensed, MiCA-compliant, attested monthly by a Big-4 auditor."
+      - "1:1 reserves held in cash and short-dated Treasuries at named partner banks."
+      - "Same-day fiat redemption at par through Circle Mint for institutional accounts."
+      - "Distributed across 15+ chains with identical issuance and redemption guarantees."
+    competitors:
+      - name: "USDT (Tether)"
+        positioning_vs: |
+          USDT has the deepest liquidity and corridors, especially on Tron. USDC competes on regulated
+          posture — a fintech regulator or auditor can read a Circle attestation and clear it in hours;
+          USDT requires an institutional risk exception. Use USDT for raw remittance volume; use USDC
+          when a bank, regulator, or risk team is in the approval chain.
+      - name: "PYUSD (PayPal)"
+        positioning_vs: |
+          PYUSD has PayPal's consumer distribution but a smaller circulation and narrower chain support.
+          USDC has multi-chain depth, broader integrations, and a longer regulatory track record.
+          PYUSD is interesting for closed-loop consumer flows; USDC is the safer choice for B2B.
+      - name: "Native bank-issued stablecoins (JPM Coin, etc.)"
+        positioning_vs: |
+          Bank-issued coins are permissioned and counterparty-locked. USDC is openly transferable across
+          customers and chains. For a fintech serving multiple bank partners, USDC composes; JPM Coin
+          forces a per-bank integration.
+    proof_points:
+      - "Used by Visa, Mastercard, BlackRock, and major fintech treasuries for stablecoin exposure."
+      - "MiCA-licensed in the EU; first regulated dollar stablecoin under the new framework."
+      - "Same-day redemption SLAs for Circle Mint institutional accounts."
+    primary_metric: "USDC in circulation"
+
+  - id: eurc
+    name: EURC
+    category: "Regulated euro stablecoin"
+    status: ga
+    one_liner: "MiCA-licensed euro stablecoin issued by Circle, redeemable at par through Circle Mint."
+    job_to_be_done: |
+      Hold and move euros onchain under a MiCA framework, with the same compliance posture as USDC,
+      for European fintechs and PSPs needing a regulated euro rail that isn't dependent on a US dollar bridge.
+    icps: ["fintech", "psp", "enterprise"]
+    differentiators:
+      - "MiCA-licensed — first major euro stablecoin issued under the EU framework."
+      - "Issued by the same regulated entity as USDC, with identical attestation and redemption mechanics."
+      - "Multi-chain coverage on EVMs and Solana from day one."
+      - "FX pair to USDC at issuer level — no AMM slippage for institutional flows."
+    competitors:
+      - name: "EURT (Tether)"
+        positioning_vs: |
+          EURT is thinly circulated and lacks MiCA registration. EURC has the issuer-grade compliance
+          posture European fintechs need to onboard the asset through a bank or regulator. The EURC
+          attestation is a document an EU compliance officer can take to a board; EURT typically isn't.
+      - name: "Agora EUR / Société Générale EURCV"
+        positioning_vs: |
+          Bank-affiliated euro stables are permissioned and limited to a single bank's counterparties.
+          EURC is open-transfer across chains and customers, which matters for a PSP serving multiple
+          merchant categories or for a treasury team managing FX across banks.
+      - name: "Decentralized euro stables (EURe, etc.)"
+        positioning_vs: |
+          Decentralized euro stables compete on cypherpunk values. EURC competes on regulated posture
+          and same-day fiat redemption. For a regulated PSP, EURC clears compliance; decentralized
+          euros often don't.
+    proof_points:
+      - "First major euro stablecoin to obtain MiCA registration."
+      - "Available on Ethereum, Solana, Base, Avalanche, Stellar at launch."
+      - "Pairs directly with USDC through Circle Mint at institutional rates."
+    primary_metric: "EURC in circulation"
+
+  - id: cctp
+    name: CCTP v2
+    category: "Cross-chain transport protocol"
+    status: ga
+    one_liner: "Native burn-and-mint transport for USDC and EURC across chains — no bridges, no wrappers."
+    job_to_be_done: |
+      Move USDC and EURC between chains without holding bridge risk, wrapped versions, or third-party
+      intermediaries. The token is destroyed on the source chain and re-issued on the destination by
+      Circle, with the same redemption guarantee on either side.
+    icps: ["fintech", "psp", "developer"]
+    differentiators:
+      - "Burn-and-mint — no bridge custody risk, no wrapped USDC variants."
+      - "Operated by the issuer — same counterparty as the asset itself."
+      - "Hooks API for programmable post-transfer actions (deposit, swap, settle) on the destination."
+      - "Supported across 12+ chains and growing, all under Circle's compliance posture."
+    competitors:
+      - name: "LayerZero"
+        positioning_vs: |
+          LayerZero is general-purpose messaging with per-app implementations of asset accounting.
+          CCTP is purpose-built for Circle assets with the issuer in the loop. LayerZero competes on
+          flexibility; CCTP competes on issuer-grade trust for the dollar itself.
+      - name: "AggLayer (Polygon)"
+        positioning_vs: |
+          AggLayer is multi-asset and multi-chain settlement. CCTP is USDC/EURC-only burn-mint.
+          For a Circle-asset-only flow, CCTP is simpler and counterparty-aligned. For a platform that
+          needs native multi-asset transport (RWAs, local stables, USDT), AggLayer is broader.
+      - name: "Wormhole"
+        positioning_vs: |
+          Wormhole is a generalized message bus with lock-and-mint wrappers for many assets. CCTP is
+          burn-and-mint just for Circle assets. Wormhole offers wider coverage; CCTP offers a tighter
+          trust model for the specific asset.
+    proof_points:
+      - "Live across Ethereum, Avalanche, Arbitrum, Optimism, Base, Polygon PoS, Solana, and more."
+      - "Used by major DEXes, wallets, and fintech rails for native USDC routing."
+      - "v2 Hooks enable atomic deposit, swap, and settle on destination — production today."
+    primary_metric: "CCTP burn-mint transactions per week"
+
+  - id: circle-mint
+    name: Circle Mint
+    category: "Institutional on/off-ramp"
+    status: ga
+    one_liner: "Regulated banking interface to convert dollars and euros to and from USDC and EURC at par."
+    job_to_be_done: |
+      Move money between the banking system and the stablecoin system through a single regulated
+      counterparty, with same-day SLAs, attested reserves, and an institutional account agreement
+      that legal and compliance can sign off on once and reuse.
+    icps: ["fintech", "psp", "enterprise"]
+    differentiators:
+      - "Institutional accounts with named banking partners and same-day fiat SLAs."
+      - "Direct issuer relationship — no broker spread on mint or redeem."
+      - "API-first — fits existing treasury automation and reconciliation."
+      - "USDC ⇄ EURC FX directly through the issuer at institutional rates."
+    competitors:
+      - name: "Coinbase Prime"
+        positioning_vs: |
+          Coinbase Prime is a broker on top of exchange liquidity. Circle Mint is the issuer interface.
+          For a treasury holding USDC, Circle Mint redeems at par; Prime adds a spread. Use Prime for
+          execution across many assets; use Mint for direct issuer round-trip on Circle assets.
+      - name: "BVNK / Bridge.xyz"
+        positioning_vs: |
+          BVNK and Bridge are fintech aggregators wrapping multiple banking and stablecoin rails.
+          Circle Mint is single-issuer and single-asset-family. The aggregators offer breadth; Mint
+          offers depth on the Circle stack with no intermediary."
+      - name: "MoonPay / Transak"
+        positioning_vs: |
+          Consumer on-ramps with high spreads and retail KYC. Circle Mint is institutional only — no
+          retail flows. They serve adjacent buyer types.
+    proof_points:
+      - "Operated by Circle Internet Financial — NYDFS-licensed and MiCA-registered."
+      - "Same-day USD and EUR fiat redemption SLAs for institutional accounts."
+      - "Used by major fintechs for treasury automation against USDC and EURC."
+    primary_metric: "Monthly mint + redeem volume"

@@ -53,17 +53,46 @@ export const positioningSourceSchema = z.object({
 export type PositioningSource = z.infer<typeof positioningSourceSchema>;
 export type ProductPositioning = z.infer<typeof productSchema>;
 
-const SOURCE_FILE = process.env.POSITIONING_SOURCE ?? "positioning/open-money-stack.yml";
+export interface SourceDescriptor {
+  id: string;
+  label: string;
+  file: string;
+  blurb: string;
+}
 
-export function loadPositioningSource(): PositioningSource {
-  const path = resolve(process.cwd(), SOURCE_FILE);
+export const SOURCES: SourceDescriptor[] = [
+  {
+    id: "polygon",
+    label: "Polygon Open Money Stack",
+    file: "positioning/open-money-stack.yml",
+    blurb: "The product. Four-product platform, multi-asset, multi-chain.",
+  },
+  {
+    id: "circle",
+    label: "Circle Stablecoin Network",
+    file: "positioning/circle-stablecoin-network.yml",
+    blurb: "Competitor lens. Same buyer, single-issuer shape.",
+  },
+];
+
+export const DEFAULT_SOURCE_ID = SOURCES[0].id;
+
+export function getSourceDescriptor(id?: string | null): SourceDescriptor {
+  if (!id) return SOURCES[0];
+  return SOURCES.find((s) => s.id === id) ?? SOURCES[0];
+}
+
+export function loadPositioningSource(sourceId?: string | null): PositioningSource {
+  const desc = getSourceDescriptor(sourceId);
+  const path = resolve(process.cwd(), desc.file);
   const raw = readFileSync(path, "utf8");
   const parsed = parseYaml(raw);
   return positioningSourceSchema.parse(parsed);
 }
 
-export function loadPositioningSourceText(): { path: string; text: string } {
-  const path = resolve(process.cwd(), SOURCE_FILE);
+export function loadPositioningSourceText(sourceId?: string | null): { id: string; path: string; text: string; descriptor: SourceDescriptor } {
+  const desc = getSourceDescriptor(sourceId);
+  const path = resolve(process.cwd(), desc.file);
   const text = readFileSync(path, "utf8");
-  return { path, text };
+  return { id: desc.id, path, text, descriptor: desc };
 }

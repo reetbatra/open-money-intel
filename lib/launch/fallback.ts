@@ -1,5 +1,11 @@
 import { createHash } from "node:crypto";
-import { loadPositioningSource, loadPositioningSourceText, type ProductPositioning } from "./source";
+import {
+  loadPositioningSource,
+  loadPositioningSourceText,
+  getSourceDescriptor,
+  type ProductPositioning,
+  type PositioningSource,
+} from "./source";
 import type { LaunchBundle, ProductAssets, PlatformAssets, AssetMeta } from "./types";
 
 const meta = (model = "fallback"): AssetMeta => ({
@@ -10,15 +16,16 @@ const meta = (model = "fallback"): AssetMeta => ({
   estimatedCostUsd: 0,
 });
 
-function fallbackProduct(p: ProductPositioning): ProductAssets {
+function fallbackProduct(p: ProductPositioning, src: PositioningSource): ProductAssets {
+  const platformName = src.platform.name;
   return {
     productId: p.id,
     productName: p.name,
     one_pager: {
       headline: p.one_liner.slice(0, 80),
       subheadline: p.job_to_be_done.slice(0, 180),
-      problem: "Buyers waste cycles wiring four vendors to do what one stack should.",
-      solution: `${p.name} delivers ${p.category.toLowerCase()} as part of a single API surface — composable with the rest of the Polygon Stack.`,
+      problem: "Buyers waste cycles stitching together vendors that should ship as one stack.",
+      solution: `${p.name} delivers ${p.category.toLowerCase()} as part of ${platformName} — composable with the rest of the stack.`,
       features: p.differentiators.slice(0, 3).map((d) => ({ name: d.split("—")[0]?.trim().slice(0, 40) || "Feature", body: d })),
       proof: p.proof_points.slice(0, 3),
       cta: { primary: "Get a demo", secondary: "Read the docs" },
@@ -110,7 +117,7 @@ function fallbackProduct(p: ProductPositioning): ProductAssets {
       })),
     },
     bd_talk_track: {
-      opener: `${p.name} is the part of the Polygon Open Money Stack that ${p.one_liner.toLowerCase()}. Where in your roadmap does ${p.category.toLowerCase()} sit today?`,
+      opener: `${p.name} is the part of ${platformName} that ${p.one_liner.toLowerCase()}. Where in your roadmap does ${p.category.toLowerCase()} sit today?`,
       qualifying_questions: [
         "What does your money-movement architecture look like today?",
         "Which segments — fintech, PSP, enterprise issuer, consumer app — describe your business?",
@@ -151,16 +158,19 @@ function fallbackPlatform(src: ReturnType<typeof loadPositioningSource>): Platfo
   };
 }
 
-export function buildFallbackBundle(): LaunchBundle {
-  const src = loadPositioningSource();
-  const { path, text } = loadPositioningSourceText();
+export function buildFallbackBundle(sourceId?: string | null): LaunchBundle {
+  const src = loadPositioningSource(sourceId);
+  const { id, path, text } = loadPositioningSourceText(sourceId);
+  const descriptor = getSourceDescriptor(id);
   const sourceHash = createHash("sha256").update(text).digest("hex").slice(0, 12);
   return {
     generatedAt: new Date().toISOString(),
+    sourceId: id,
+    sourceLabel: descriptor.label,
     sourcePath: path,
     sourceHash,
     platform: fallbackPlatform(src),
-    products: src.products.map(fallbackProduct),
+    products: src.products.map((p) => fallbackProduct(p, src)),
     totals: { totalLatencyMs: 0, totalTokens: 0, totalCostUsd: 0, callCount: 0 },
   };
 }

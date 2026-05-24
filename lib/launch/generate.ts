@@ -1,12 +1,20 @@
 import { generateObject } from "ai";
 import { z } from "zod";
 import { createHash } from "node:crypto";
-import { loadPositioningSource, loadPositioningSourceText, type PositioningSource, type ProductPositioning } from "./source";
+import {
+  loadPositioningSource,
+  loadPositioningSourceText,
+  type PositioningSource,
+  type ProductPositioning,
+  type SourceDescriptor,
+} from "./source";
 import type {
   LaunchBundle,
   PlatformAssets,
   ProductAssets,
   AssetMeta,
+  CallTrace,
+  BundlePrompts,
 } from "./types";
 
 const MODEL = process.env.L2_INTEL_MODEL ?? "anthropic/claude-sonnet-4.6";
@@ -191,95 +199,76 @@ function productContext(product: ProductPositioning, src: PositioningSource): st
     .join("\n");
 }
 
-async function generateProductAssets(
-  product: ProductPositioning,
-  src: PositioningSource,
-): Promise<ProductAssets> {
-  const ctx = productContext(product, src);
-  const baseSystem = [
-    `You are a senior product marketing writer working from a positioning source of truth.`,
-    `Generate copy that could ship without editorial review. Be specific, concrete, and concise.`,
-    `Never invent numbers, customers, or claims not present in the supplied context.`,
-    `When a forbidden word is listed, do not use it under any inflection.`,
-  ].join(" ");
+const baseSystem = [
+  `You are a senior product marketing writer working from a positioning source of truth.`,
+  `Generate copy that could ship without editorial review. Be specific, concrete, and concise.`,
+  `Never invent numbers, customers, or claims not present in the supplied context.`,
+  `When a forbidden word is listed, do not use it under any inflection.`,
+].join(" ");
 
-  const [op, lb, en, ads, bc, tt] = await Promise.all([
-    generateWithMeta({
+interface CallSpec {
+  asset: string;
+  schemaName: string;
+  schema: z.ZodTypeAny;
+  system: string;
+  prompt: string;
+}
+
+function productCallSpecs(product: ProductPositioning, src: PositioningSource): CallSpec[] {
+  const ctx = productContext(product, src);
+  return [
+    {
+      asset: "one_pager",
+      schemaName: "onePagerSchema",
       schema: onePagerSchema,
       system: baseSystem + " Output: a one-pager structured for a single product, ready to drop into a deck.",
       prompt: `Generate the one-pager for ${product.name}.\n\n${ctx}`,
-    }),
-    generateWithMeta({
+    },
+    {
+      asset: "landing_block",
+      schemaName: "landingBlockSchema",
       schema: landingBlockSchema,
       system: baseSystem + " Output: a landing-page block (hero, features, social proof, FAQ) for the product page.",
       prompt: `Generate the landing-page block for ${product.name}. Keep the hero headline benefit-led, not feature-led.\n\n${ctx}`,
-    }),
-    generateWithMeta({
+    },
+    {
+      asset: "email_nurture",
+      schemaName: "emailNurtureSchema",
       schema: emailNurtureSchema,
       system:
         baseSystem +
         " Output: a 5-message nurture sequence on days 0, 2, 4, 7, 10. Each message single-purpose, written as if from a PMM, plain-text-feel.",
       prompt: `Generate the 5-email nurture sequence for ${product.name}. Day 0 introduces, Day 2 dives into one differentiator, Day 4 surfaces a competitor angle, Day 7 a proof point or customer-shaped story, Day 10 the close.\n\n${ctx}`,
-    }),
-    generateWithMeta({
+    },
+    {
+      asset: "linkedin_ads",
+      schemaName: "linkedinAdsSchema",
       schema: linkedinAdsSchema,
       system:
         baseSystem +
         " Output: 10 LinkedIn ad variants. Each variant covers a distinct angle (vs competitor, by ICP, by proof point, by JTBD, by category) — no near-duplicates.",
       prompt: `Generate 10 LinkedIn ad variants for ${product.name}. Each has a distinct angle. Headlines are punchy and benefit-led; intros add one concrete proof or differentiator; CTAs are 2-3 words.\n\n${ctx}`,
-    }),
-    generateWithMeta({
+    },
+    {
+      asset: "battlecards",
+      schemaName: "battlecardSetSchema",
       schema: battlecardSetSchema,
       system:
         baseSystem +
         " Output: 2-3 battlecards vs the named competitors. Each card includes a short take, why we win, where they win (honest), and objection handling.",
       prompt: `Generate battlecards for ${product.name} vs its named competitors. Honest — name where they actually beat us. 'Why we win' must be defensible by the differentiators and proof points listed.\n\n${ctx}`,
-    }),
-    generateWithMeta({
+    },
+    {
+      asset: "bd_talk_track",
+      schemaName: "bdTalkTrackSchema",
       schema: bdTalkTrackSchema,
       system: baseSystem + " Output: a BD talk track — opener, qualifying questions, talking points, objections, close.",
       prompt: `Generate a BD talk track for ${product.name}. Qualifying questions surface which ICP segment the buyer is. Objection handling matches what BD actually hears.\n\n${ctx}`,
-    }),
-  ]);
-
-  const totalLatency = Math.max(op.meta.latencyMs, lb.meta.latencyMs, en.meta.latencyMs, ads.meta.latencyMs, bc.meta.latencyMs, tt.meta.latencyMs);
-  const totalTokens =
-    (op.meta.totalTokens ?? 0) +
-    (lb.meta.totalTokens ?? 0) +
-    (en.meta.totalTokens ?? 0) +
-    (ads.meta.totalTokens ?? 0) +
-    (bc.meta.totalTokens ?? 0) +
-    (tt.meta.totalTokens ?? 0);
-  const totalCost =
-    (op.meta.estimatedCostUsd ?? 0) +
-    (lb.meta.estimatedCostUsd ?? 0) +
-    (en.meta.estimatedCostUsd ?? 0) +
-    (ads.meta.estimatedCostUsd ?? 0) +
-    (bc.meta.estimatedCostUsd ?? 0) +
-    (tt.meta.estimatedCostUsd ?? 0);
-
-  return {
-    productId: product.id,
-    productName: product.name,
-    one_pager: op.object,
-    landing_block: lb.object,
-    email_nurture: en.object,
-    linkedin_ads: ads.object,
-    battlecards: bc.object,
-    bd_talk_track: tt.object,
-    meta: {
-      generatedAt: new Date().toISOString(),
-      model: MODEL,
-      latencyMs: totalLatency,
-      promptTokens: undefined,
-      completionTokens: undefined,
-      totalTokens,
-      estimatedCostUsd: totalCost,
     },
-  };
+  ];
 }
 
-async function generatePlatformAssets(src: PositioningSource): Promise<PlatformAssets> {
+function platformCallSpec(src: PositioningSource): CallSpec {
   const productSummaries = src.products
     .map(
       (p) => `- ${p.id} (${p.name}): ${p.one_liner} | ICPs: ${p.icps.join(",")} | top competitor: ${p.competitors[0]?.name}`,
@@ -302,7 +291,9 @@ async function generatePlatformAssets(src: PositioningSource): Promise<PlatformA
     toneBlock(src),
   ].join("\n");
 
-  const { object, meta } = await generateWithMeta({
+  return {
+    asset: "platform_bundle",
+    schemaName: "platformBundleSchema",
     schema: platformBundleSchema,
     system: [
       "You are a senior PMM building the platform-level narrative for a multi-product B2B platform.",
@@ -310,31 +301,124 @@ async function generatePlatformAssets(src: PositioningSource): Promise<PlatformA
       "Reference only the products listed. Use product ids exactly as provided.",
     ].join(" "),
     prompt,
-  });
-  return { ...object, meta };
+  };
+}
+
+async function generateProductAssets(
+  product: ProductPositioning,
+  src: PositioningSource,
+): Promise<{ assets: ProductAssets; calls: CallTrace[] }> {
+  const specs = productCallSpecs(product, src);
+
+  const results = await Promise.all(
+    specs.map((spec) => generateWithMeta({ schema: spec.schema, system: spec.system, prompt: spec.prompt })),
+  );
+  const [op, lb, en, ads, bc, tt] = results;
+
+  const totalLatency = Math.max(...results.map((r) => r.meta.latencyMs));
+  const totalTokens = results.reduce((s, r) => s + (r.meta.totalTokens ?? 0), 0);
+  const totalCost = results.reduce((s, r) => s + (r.meta.estimatedCostUsd ?? 0), 0);
+
+  const calls: CallTrace[] = specs.map((spec) => ({
+    asset: spec.asset,
+    productId: product.id,
+    systemPrompt: spec.system,
+    userPrompt: spec.prompt,
+    schemaName: spec.schemaName,
+  }));
+
+  return {
+    assets: {
+      productId: product.id,
+      productName: product.name,
+      one_pager: op.object as ProductAssets["one_pager"],
+      landing_block: lb.object as ProductAssets["landing_block"],
+      email_nurture: en.object as ProductAssets["email_nurture"],
+      linkedin_ads: ads.object as ProductAssets["linkedin_ads"],
+      battlecards: bc.object as ProductAssets["battlecards"],
+      bd_talk_track: tt.object as ProductAssets["bd_talk_track"],
+      meta: {
+        generatedAt: new Date().toISOString(),
+        model: MODEL,
+        latencyMs: totalLatency,
+        promptTokens: undefined,
+        completionTokens: undefined,
+        totalTokens,
+        estimatedCostUsd: totalCost,
+      },
+    },
+    calls,
+  };
+}
+
+async function generatePlatformAssets(src: PositioningSource): Promise<{ assets: PlatformAssets; call: CallTrace }> {
+  const spec = platformCallSpec(src);
+  const { object, meta } = await generateWithMeta({ schema: spec.schema, system: spec.system, prompt: spec.prompt });
+  return {
+    assets: { ...(object as Omit<PlatformAssets, "meta">), meta },
+    call: {
+      asset: spec.asset,
+      systemPrompt: spec.system,
+      userPrompt: spec.prompt,
+      schemaName: spec.schemaName,
+    },
+  };
 }
 
 // ---------- Top-level ----------
 
-export async function generateLaunchBundle(): Promise<LaunchBundle> {
-  const src = loadPositioningSource();
-  const { path, text } = loadPositioningSourceText();
+export async function generateLaunchBundle(sourceId?: string | null): Promise<LaunchBundle> {
+  const src = loadPositioningSource(sourceId);
+  const { id, path, text, descriptor } = loadPositioningSourceText(sourceId);
   const sourceHash = createHash("sha256").update(text).digest("hex").slice(0, 12);
 
   const platform = await generatePlatformAssets(src);
   const products = await Promise.all(src.products.map((p) => generateProductAssets(p, src)));
 
-  const totalLatencyMs = platform.meta.latencyMs + products.reduce((s, p) => s + p.meta.latencyMs, 0);
-  const totalTokens = (platform.meta.totalTokens ?? 0) + products.reduce((s, p) => s + (p.meta.totalTokens ?? 0), 0);
-  const totalCostUsd = (platform.meta.estimatedCostUsd ?? 0) + products.reduce((s, p) => s + (p.meta.estimatedCostUsd ?? 0), 0);
+  const totalLatencyMs = platform.assets.meta.latencyMs + products.reduce((s, p) => s + p.assets.meta.latencyMs, 0);
+  const totalTokens = (platform.assets.meta.totalTokens ?? 0) + products.reduce((s, p) => s + (p.assets.meta.totalTokens ?? 0), 0);
+  const totalCostUsd =
+    (platform.assets.meta.estimatedCostUsd ?? 0) + products.reduce((s, p) => s + (p.assets.meta.estimatedCostUsd ?? 0), 0);
   const callCount = 1 + products.length * 6;
+
+  const prompts: BundlePrompts = {
+    platform: platform.call,
+    products: products.map((p) => ({ productId: p.assets.productId, productName: p.assets.productName, calls: p.calls })),
+  };
 
   return {
     generatedAt: new Date().toISOString(),
+    sourceId: id,
+    sourceLabel: descriptor.label,
     sourcePath: path,
     sourceHash,
-    platform,
-    products,
+    platform: platform.assets,
+    products: products.map((p) => p.assets),
     totals: { totalLatencyMs, totalTokens, totalCostUsd, callCount },
+    prompts,
   };
 }
+
+// Re-export for /launch/debug page (no extra round-trip needed).
+export function previewPrompts(sourceId?: string | null): BundlePrompts {
+  const src = loadPositioningSource(sourceId);
+  return {
+    platform: (() => {
+      const spec = platformCallSpec(src);
+      return { asset: spec.asset, systemPrompt: spec.system, userPrompt: spec.prompt, schemaName: spec.schemaName };
+    })(),
+    products: src.products.map((p) => ({
+      productId: p.id,
+      productName: p.name,
+      calls: productCallSpecs(p, src).map((spec) => ({
+        asset: spec.asset,
+        productId: p.id,
+        systemPrompt: spec.system,
+        userPrompt: spec.prompt,
+        schemaName: spec.schemaName,
+      })),
+    })),
+  };
+}
+
+export type { SourceDescriptor };

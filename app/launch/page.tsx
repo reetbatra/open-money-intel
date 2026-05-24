@@ -4,36 +4,57 @@ import { ObservabilityPanel } from "@/components/launch/observability-panel";
 import { PlatformView } from "@/components/launch/platform-view";
 import { ProductSwitcher } from "@/components/launch/product-switcher";
 import { RegenerateButton } from "@/components/launch/regenerate-button";
-import { loadPositioningSourceText } from "@/lib/launch/source";
+import { SourceSwitcher } from "@/components/launch/source-switcher";
+import { loadPositioningSourceText, SOURCES, getSourceDescriptor } from "@/lib/launch/source";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-export default async function LaunchPage() {
-  let bundle = latestBundle();
+export default async function LaunchPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ source?: string }>;
+}) {
+  const params = await searchParams;
+  const desc = getSourceDescriptor(params?.source);
+  const sourceId = desc.id;
+
+  let bundle = latestBundle(sourceId);
   if (!bundle) {
-    bundle = buildFallbackBundle();
+    bundle = buildFallbackBundle(sourceId);
     saveBundle(bundle);
   }
-  const { path, text } = loadPositioningSourceText();
+  const { path, text } = loadPositioningSourceText(sourceId);
   const sourcePreview = text.split("\n").slice(0, 24).join("\n");
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-10">
-      <header className="mb-8 max-w-3xl">
+      <header className="mb-6 max-w-3xl">
         <div className="inline-flex items-center gap-2 rounded-full border border-violet-400/20 bg-violet-500/10 px-3 py-1 text-[11px] text-violet-200">
           Launch in a Box · positioning → assets in one pass
         </div>
         <h1 className="mt-4 text-4xl font-semibold tracking-tight">Compress positioning into shipped assets.</h1>
         <p className="mt-3 text-zinc-400 leading-relaxed">
-          One source of truth (<code className="text-zinc-300">{path.split("/").slice(-2).join("/")}</code>) →
-          one Claude pipeline → six assets per product plus the platform-level pitch.
+          One YAML source of truth → one Claude pipeline → six assets per product plus the platform-level pitch.
           The PMM owns strategic inputs; AI handles production volume.
         </p>
-        <div className="mt-5">
-          <RegenerateButton hasCached={bundle.products[0]?.meta.model !== "fallback"} />
-        </div>
       </header>
+
+      <section className="mb-6">
+        <div className="text-[11px] uppercase tracking-[0.18em] text-zinc-500 mb-2">Positioning source · switch to prove the system generalizes</div>
+        <SourceSwitcher
+          sources={SOURCES.map((s) => ({ id: s.id, label: s.label, blurb: s.blurb }))}
+          activeId={sourceId}
+        />
+        <div className="mt-3 flex items-center justify-between text-[11px] text-zinc-500">
+          <span>Loaded: <code className="text-zinc-400">{path.split("/").slice(-2).join("/")}</code> · hash {bundle.sourceHash}</span>
+          <Link href={`/launch/debug?source=${sourceId}`} className="hover:text-violet-300">View prompts + schemas →</Link>
+        </div>
+      </section>
+
+      <div className="mb-8">
+        <RegenerateButton hasCached={bundle.products[0]?.meta.model !== "fallback"} sourceId={sourceId} />
+      </div>
 
       <ObservabilityPanel bundle={bundle} />
 

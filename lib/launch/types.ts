@@ -89,6 +89,8 @@ export interface PlatformAssets {
 
 export interface LaunchBundle {
   generatedAt: string;
+  sourceId: string;
+  sourceLabel: string;
   sourcePath: string;
   sourceHash: string;
   platform: PlatformAssets;
@@ -99,4 +101,18 @@ export interface LaunchBundle {
     totalCostUsd: number;
     callCount: number;
   };
+  prompts?: BundlePrompts;
+}
+
+export interface CallTrace {
+  asset: string;
+  productId?: string;
+  systemPrompt: string;
+  userPrompt: string;
+  schemaName: string;
+}
+
+export interface BundlePrompts {
+  platform: CallTrace;
+  products: Array<{ productId: string; productName: string; calls: CallTrace[] }>;
 }

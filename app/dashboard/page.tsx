@@ -14,12 +14,13 @@ export default async function DashboardPage() {
   return (
     <div className="mx-auto max-w-7xl px-6 py-10">
       <header className="mb-8 max-w-3xl">
-        <div className="text-[11px] uppercase tracking-[0.18em] text-zinc-500">L2 legacy view</div>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">Where the L2 narrative still moves money</h1>
+        <div className="text-[11px] uppercase tracking-[0.18em] text-amber-400/80">Legacy view · what Polygon used to optimize for</div>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight">The L2 scoreboard that no longer scores the right game</h1>
         <p className="mt-3 text-sm text-zinc-400 leading-relaxed">
-          Polygon&apos;s primary positioning now centers on the Open Money Stack, not the L2 scaling story.
-          This view stays because the L2 narrative still drives a meaningful share of stablecoin liquidity — and competitors are still framing pitches around it.
-          Treat as <em>secondary intel</em>. The primary lens is on <Link href="/rails" className="text-violet-300 hover:underline">/rails</Link>.
+          For three years the industry measured Polygon on this board: TVS, chain count, ecosystem rollups.
+          The pivot to the Open Money Stack means the unit of comparison is now stablecoin supply per payment rail, not L2 TVS.
+          This view stays because the L2 narrative still moves liquidity and competitors still pitch from it — but every decision should be made on{" "}
+          <Link href="/rails" className="text-violet-300 hover:underline">/rails</Link>, not here.
         </p>
       </header>
 
