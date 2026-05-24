@@ -1,4 +1,8 @@
 {
+  "framework": "nextjs",
+  "buildCommand": "next build",
+  "installCommand": "pnpm install",
+  "outputDirectory": ".next",
   "crons": [
     {
       "path": "/api/cron/weekly?send=1",
