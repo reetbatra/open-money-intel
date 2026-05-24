@@ -1,0 +1,190 @@
+meta:
+  version: "1"
+  author: "Open Money Intel · demo positioning source"
+  updated: "2026-05-24"
+
+platform:
+  name: Polygon Open Money Stack
+  category: "Onchain money-movement infrastructure"
+  one_liner: "API-driven money movement on blockchain settlement — issuance, liquidity, settlement, and interop in one stack."
+  positioning_statement: |
+    For fintechs, neobanks, PSPs, and enterprises that need programmable dollar rails at internet scale,
+    the Polygon Open Money Stack is the API-driven money-movement infrastructure that combines
+    deep stablecoin liquidity (PoS), cross-chain settlement (AggLayer), sovereign issuer chains (CDK),
+    and verifiable execution (zkEVM) into one stack.
+    Unlike Tron (single-rail, no programmability), Circle (issuer-only, USDC-only), or Solana Pay (single-chain),
+    the Polygon Stack gives builders a programmable, multi-asset, multi-chain platform with the regulatory
+    posture banks and PSPs require.
+  bundled_value_prop: |
+    The point of the stack is not any single product — it is that issuance, liquidity, settlement, and interop
+    compose into one API surface. A neobank can issue on CDK, source liquidity from PoS, settle through AggLayer,
+    and prove compliance with zkEVM — all without integrating four vendors.
+  icp_segments:
+    - id: fintech
+      label: Fintechs & neobanks
+      description: "Series B–E companies needing programmable dollar rails for treasury, payouts, and embedded finance."
+    - id: psp
+      label: PSPs & payment platforms
+      description: "Payment service providers and Stripe-class platforms expanding into stablecoin acceptance and settlement."
+    - id: enterprise
+      label: Enterprise issuers
+      description: "Banks, fintechs, and platforms that need their own permissioned chain for tokenized cash or compliance reasons."
+    - id: builder
+      label: Builders & app teams
+      description: "Teams building consumer payments apps, marketplaces, or crypto-native fintech products on EVM."
+  tone:
+    voice:
+      - "direct"
+      - "evidence-based"
+      - "technical-credible"
+      - "ships at 80%"
+    forbidden_words:
+      - "unlocks"
+      - "revolutionary"
+      - "paradigm shift"
+      - "next-generation"
+      - "world-class"
+      - "best-in-class"
+      - "leverage"
+      - "synergy"
+    reference_voice: |
+      Stripe's docs voice meets Cloudflare's blog voice. Specific, opinionated, evidence-led.
+
+products:
+  - id: agglayer
+    name: AggLayer
+    category: "Cross-chain settlement protocol"
+    status: ga
+    one_liner: "Unified liquidity and shared state across heterogeneous chains via pessimistic proofs."
+    job_to_be_done: |
+      Move value between chains without bridges, wrapped assets, or per-chain liquidity pools.
+      Treat connected chains as one accounting unit so a builder writes once and settles anywhere.
+    icps: ["fintech", "psp", "enterprise"]
+    differentiators:
+      - "Stack-agnostic — connects OP, ZK, and sovereign chains, not just one stack."
+      - "Pessimistic proofs treat connected chains as a single accounting unit."
+      - "No wrapped assets; native tokens move with full collateralization guarantees."
+      - "Polygon CDK chains connect by default — built-in pipeline of issuer chains."
+    competitors:
+      - name: "Optimism Superchain"
+        positioning_vs: |
+          Superchain unifies OP-stack chains only. AggLayer connects heterogeneous stacks — if a buyer expects to
+          host chains using more than one technology (CDK, OP, zk), Superchain forces a fork, AggLayer doesn't.
+      - name: "Circle CCTP v2"
+        positioning_vs: |
+          CCTP is USDC-only burn-mint transport, issuer-controlled. AggLayer is multi-asset, multi-chain, and
+          permissionless. Useful for USDC-only flows; insufficient for any platform that needs to move native
+          stables, RWAs, or non-Circle dollars alongside USDC.
+      - name: "LayerZero"
+        positioning_vs: |
+          LayerZero is messaging infra requiring per-app implementations of accounting and security. AggLayer is
+          a settlement protocol with built-in shared accounting. LayerZero competes on flexibility, AggLayer on
+          unified state.
+    proof_points:
+      - "Live across 5+ connected chains including Polygon PoS, X Layer, Astar zkEVM, Wirex Pay."
+      - "Pessimistic proof system audited; first production deployments serving payment-corridor traffic."
+      - "CDK chains inherit AggLayer connectivity at launch with no extra integration."
+    primary_metric: "Cross-chain transactions settled per week"
+
+  - id: cdk
+    name: Polygon CDK
+    category: "Sovereign chain dev kit"
+    status: ga
+    one_liner: "Deploy your own zk-powered chain that connects to AggLayer at launch."
+    job_to_be_done: |
+      Spin up a sovereign chain — for a regulated bank, a tokenized RWA issuer, a high-throughput consumer app —
+      with the proving, gas-token, and compliance levers you need, while inheriting Polygon's liquidity and interop.
+    icps: ["enterprise", "fintech"]
+    differentiators:
+      - "Sovereign control of gas token, throughput, validators, and compliance gates."
+      - "AggLayer connection at launch — no isolated-chain bootstrap problem."
+      - "zk-proving stack inherited; no need to build your own prover or sequencer."
+      - "Compliance and KYC modules built for regulated issuers."
+    competitors:
+      - name: "Arbitrum Orbit"
+        positioning_vs: |
+          Orbit is OP-stack only and settles into Arbitrum One. CDK is zk-native and settles via AggLayer into
+          a heterogeneous-chain ecosystem. CDK fits issuer chains that need regulatory finality; Orbit fits
+          gaming/social chains that need Arbitrum's existing tooling.
+      - name: "OP Stack / Superchain"
+        positioning_vs: |
+          OP Stack ties you to optimistic fault proofs and 7-day withdrawals. CDK gives zk finality and shorter
+          settlement guarantees, which matters for regulated cash and tokenized RWA use cases.
+      - name: "ZK Stack (zkSync)"
+        positioning_vs: |
+          ZK Stack chains connect through zkSync's Elastic Network. CDK chains connect through AggLayer, which
+          accepts non-zk chains too. If a customer's roadmap includes non-zk chains, ZK Stack is a dead end.
+    proof_points:
+      - "Live deployments include X Layer (OKX), Astar zkEVM, Lumia."
+      - "Compliance modules production-tested for regulated payments use cases."
+      - "AggLayer-by-default removes the cold-start liquidity problem most sovereign chains face."
+    primary_metric: "CDK chains in production"
+
+  - id: polygon-pos
+    name: Polygon PoS
+    category: "High-liquidity EVM payments chain"
+    status: ga
+    one_liner: "The largest non-Tron stablecoin EVM home — battle-tested for global payments and fintech use cases."
+    job_to_be_done: |
+      Move dollars at internet scale with sub-cent fees, instant finality from a user's perspective, and the
+      deepest EVM stablecoin liquidity outside of Tron and Ethereum mainnet.
+    icps: ["fintech", "psp", "builder"]
+    differentiators:
+      - "Battle-tested: trillions in lifetime onchain value, millions of daily transactions."
+      - "EVM-equivalent — Solidity tooling, MetaMask compatibility, full DeFi composability."
+      - "Deep stablecoin liquidity in USDC, USDT, EURC, plus growing local-currency stables."
+      - "Sub-cent fees and 2-second finality make microtransaction-class flows viable."
+    competitors:
+      - name: "Tron"
+        positioning_vs: |
+          Tron wins raw USDT supply via low fees and entrenched remittance corridors. PoS wins where buyers
+          need EVM programmability, regulated-fintech posture, multi-asset support beyond USDT, and access to
+          the broader Polygon Stack (CDK, AggLayer) without rebuilding integrations.
+      - name: "Base"
+        positioning_vs: |
+          Base has Coinbase's consumer distribution — strong in US wallet onboarding. PoS has global liquidity
+          and a more mature fintech-integration story. Both are EVM. Pick PoS for global PSP-class deployments;
+          pick Base if Coinbase wallet UX is the primary distribution lever.
+      - name: "Solana Pay"
+        positioning_vs: |
+          Solana Pay is fast and cheap but locks you into the Solana stack. PoS is EVM, multi-chain via the
+          Polygon Stack, and integrates with existing fintech infrastructure. Use Solana for single-chain
+          consumer payments apps; use PoS for platform plays needing portability.
+    proof_points:
+      - "Top-3 EVM chain by stablecoin supply globally."
+      - "Active integrations with Stripe (legacy), Revolut, Mastercard programs."
+      - "Sub-cent median fees sustained even during volume spikes."
+    primary_metric: "Stablecoin transfer volume"
+
+  - id: zkevm
+    name: Polygon zkEVM
+    category: "Verifiable settlement layer"
+    status: ga
+    one_liner: "EVM-equivalent zk-rollup for use cases that require cryptographic settlement guarantees."
+    job_to_be_done: |
+      Settle high-value flows where the buyer's auditor, regulator, or risk team wants cryptographic finality
+      rather than economic finality. Issue tokenized assets where proof-of-execution matters legally.
+    icps: ["enterprise", "fintech"]
+    differentiators:
+      - "EVM-equivalent — same bytecode, same tools, no Solidity rewrites."
+      - "zk finality removes the 7-day withdrawal window of optimistic stacks."
+      - "Proof of execution makes regulatory and audit conversations qualitatively simpler."
+      - "Connects to AggLayer for unified liquidity with the rest of the Stack."
+    competitors:
+      - name: "zkSync Era"
+        positioning_vs: |
+          zkSync Era is not bytecode-equivalent — Solidity contracts need recompilation. zkEVM is. For a fintech
+          porting an existing EVM codebase, that difference compounds across audits and integrations.
+      - name: "Linea"
+        positioning_vs: |
+          Linea is ConsenSys-backed and integrates well with MetaMask. zkEVM has the Polygon Stack — AggLayer
+          connection, CDK adjacency, and a more mature compliance story for regulated issuers.
+      - name: "Scroll"
+        positioning_vs: |
+          Scroll has strong developer credibility but no comparable platform ecosystem. zkEVM ships as one
+          component of the Open Money Stack, which matters for buyers building multi-product roadmaps.
+    proof_points:
+      - "Production-ready zk-proving with daily settlement to Ethereum L1."
+      - "Used in tokenized RWA pilots and regulated payment-corridor deployments."
+      - "Lower withdrawal latency than any optimistic-stack equivalent."
+    primary_metric: "Verifiable transactions settled per week"
