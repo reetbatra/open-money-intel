@@ -16,6 +16,7 @@ export function SiteHeader() {
           <NavLink href="/">Dashboard</NavLink>
           <NavLink href="/rails">Rails</NavLink>
           <NavLink href="/launch">Launch</NavLink>
+          <NavLink href="/telemetry">Telemetry</NavLink>
           <NavLink href="/briefing">Briefing</NavLink>
           <NavLink href="/how-it-works">How it works</NavLink>
         </nav>

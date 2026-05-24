@@ -7,11 +7,12 @@ export default function HowItWorks() {
       <div className="inline-flex items-center gap-2 rounded-full border border-violet-400/20 bg-violet-500/10 px-3 py-1 text-[11px] text-violet-200">
         How this is wired
       </div>
-      <h1 className="mt-4 text-4xl font-semibold tracking-tight">Two loops, one source of truth.</h1>
+      <h1 className="mt-4 text-4xl font-semibold tracking-tight">Three loops, one source of truth.</h1>
       <p className="mt-4 text-zinc-400 leading-relaxed max-w-3xl">
-        Open Money Intel is a working prototype of two PMM workflows running on the same architecture:
-        a competitive-monitoring loop that watches stablecoin rails, and a launch pipeline that compresses
-        a positioning source into a full asset package.
+        Open Money Intel is a working prototype of three PMM workflows on the same architecture:
+        a competitive-monitoring loop that watches stablecoin rails, a launch pipeline that compresses
+        positioning into a full asset package, and a measurement loop that feeds channel outcomes back
+        into the positioning YAML as concrete edit suggestions.
       </p>
 
       <section className="mt-12">
@@ -19,7 +20,7 @@ export default function HowItWorks() {
         <ArchDiagram />
       </section>
 
-      <section className="mt-16 grid md:grid-cols-2 gap-5">
+      <section className="mt-16 grid md:grid-cols-3 gap-5">
         <LoopCard
           title="Loop 1 — Monitoring"
           subtitle="Continuous · cron-driven"
@@ -35,12 +36,24 @@ export default function HowItWorks() {
           title="Loop 2 — Launch pipeline"
           subtitle="On-demand · positioning-driven"
           body={[
-            "positioning/open-money-stack.yml is the single source of truth — platform-level + N products.",
+            "positioning/*.yml is the source of truth — Polygon Stack and Circle Network are wired side-by-side to prove generality.",
             "POST /api/launch/generate parses the YAML through a Zod schema (rejects malformed positioning before any AI call).",
             "Per product, six parallel generateObject calls produce one-pager, landing block, 5-email sequence, 10 LinkedIn ads, 3 battlecards, BD talk track.",
             "One platform-level call produces the master narrative, bundled pitch, ICP-to-product map, cross-product table.",
             "Each call returns a typed object — never free-form text — so the viewer can render it without parsing.",
-            "Tokens, latency, and estimated cost surface in the observability panel.",
+            "Tokens, latency, and estimated cost surface in the observability panel. /launch/debug shows every prompt and schema.",
+          ]}
+        />
+        <LoopCard
+          title="Loop 3 — Measurement"
+          subtitle="Closes the cycle · YAML-aware"
+          body={[
+            "Assets fan out to six channels: LinkedIn ads, landing pages, email nurtures, one-pagers, battlecards, BD talk tracks.",
+            "Each channel reports impressions, CTR, conversion rate, spend, CPL — seeded deterministically from the source hash for demo reproducibility.",
+            "The reporter surfaces the worst-CPL or lowest-converting asset per product as a finding.",
+            "Each finding ships with a concrete YAML edit: move a proof point, swap a competitor framing, promote a FAQ into differentiators.",
+            "PMM applies the edit → regenerates → telemetry seed changes → next iteration. The loop is the product.",
+            "Live at /telemetry. Production swaps the seeded data for LinkedIn Campaign Manager + GA4 + Salesforce.",
           ]}
         />
       </section>
@@ -106,10 +119,6 @@ export default function HowItWorks() {
           <li>
             <span className="text-zinc-100 font-medium">Slack approvals.</span>
             <span className="ml-1 text-sm">Generated assets post to a Slack channel with thumbs-up gating before going live to BD.</span>
-          </li>
-          <li>
-            <span className="text-zinc-100 font-medium">GTM telemetry layer.</span>
-            <span className="ml-1 text-sm">Track time-to-market per product, BD material adoption (last-opened, last-shared), campaign performance — close the measurement loop the JD asks for.</span>
           </li>
           <li>
             <span className="text-zinc-100 font-medium">A/B-able asset variants.</span>
