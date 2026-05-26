@@ -8,14 +8,14 @@ const briefingSchema = z.object({
   narrative: z
     .string()
     .min(140)
-    .max(1000)
+    .max(2500)
     .describe(
       "2-3 paragraphs on the dominant payments-narrative shift this week. Specific to the supplied data. No buzzwords, no 'paradigm shift', no 'unlocks'.",
     ),
   openMoneyAngle: z
     .string()
     .min(140)
-    .max(700)
+    .max(1500)
     .describe(
       "One paragraph: how this week's stablecoin-rail data affects Polygon Open Money Stack positioning. Written for Polygon PMM. Honest about where Polygon is losing, not just where it's winning.",
     ),
@@ -25,7 +25,7 @@ const briefingSchema = z.object({
         id: z.string(),
         reason: z
           .string()
-          .max(180)
+          .max(280)
           .describe("One-line empirical reason for the 7d supply shift on this rail. Tie to a real catalyst when possible."),
       }),
     )
@@ -33,8 +33,8 @@ const briefingSchema = z.object({
   battlecards: z
     .array(
       z.object({
-        question: z.string().max(160),
-        answer: z.string().min(60).max(420),
+        question: z.string().max(200),
+        answer: z.string().min(60).max(600),
       }),
     )
     .min(3)

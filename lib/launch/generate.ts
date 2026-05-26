@@ -73,7 +73,7 @@ const emailNurtureSchema = z.object({
         day: z.number().int().min(0).max(30),
         subject: z.string().max(80),
         preheader: z.string().max(120),
-        body: z.string().min(120).max(900),
+        body: z.string().min(120).max(1500),
       }),
     )
     .length(5),
@@ -111,25 +111,25 @@ const battlecardSetSchema = z.object({
 });
 
 const bdTalkTrackSchema = z.object({
-  opener: z.string().max(280),
-  qualifying_questions: z.array(z.string().max(160)).min(4).max(6),
-  talking_points: z.array(z.string().max(220)).min(4).max(6),
+  opener: z.string().max(500),
+  qualifying_questions: z.array(z.string().max(200)).min(4).max(6),
+  talking_points: z.array(z.string().max(320)).min(4).max(6),
   common_objections: z
-    .array(z.object({ objection: z.string().max(160), response: z.string().max(340) }))
+    .array(z.object({ objection: z.string().max(200), response: z.string().max(500) }))
     .min(3)
     .max(4),
-  close: z.string().max(280),
+  close: z.string().max(500),
 });
 
 const platformBundleSchema = z.object({
-  master_narrative: z.string().min(200).max(1200),
-  bundled_pitch: z.string().min(150).max(900),
+  master_narrative: z.string().min(200).max(3500),
+  bundled_pitch: z.string().min(150).max(2500),
   icp_to_product_map: z
     .array(
       z.object({
         icp_id: z.string(),
         recommended_products: z.array(z.string()).min(1),
-        positioning: z.string().max(280),
+        positioning: z.string().max(500),
       }),
     )
     .min(2),
@@ -139,8 +139,8 @@ const platformBundleSchema = z.object({
         product_id: z.string(),
         product_name: z.string(),
         primary_icp: z.string(),
-        when_to_lead_with_it: z.string().max(160),
-        primary_competitor: z.string().max(60),
+        when_to_lead_with_it: z.string().max(240),
+        primary_competitor: z.string().max(80),
       }),
     )
     .min(2),
