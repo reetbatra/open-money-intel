@@ -139,7 +139,7 @@ const platformBundleSchema = z.object({
         product_id: z.string(),
         product_name: z.string(),
         primary_icp: z.string(),
-        when_to_lead_with_it: z.string().max(240),
+        when_to_lead_with_it: z.string().max(500),
         primary_competitor: z.string().max(80),
       }),
     )
