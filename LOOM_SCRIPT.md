@@ -71,7 +71,7 @@ URL bar visible. Cursor moves deliberately — don't pan around chasing things.
 > "Observability isn't optional for AI systems. Every prompt, every schema, every token count.
 > An auditor can read this without running the pipeline.
 > Each product runs six calls in parallel; the platform call runs once.
-> Six dollars and twenty cents on Sonnet 4.6 for the full Polygon pack."
+> About a dollar fifty on Sonnet 4.6 for both Polygon and Circle's full packs — twenty-five LLM calls per source."
 
 ---
 
