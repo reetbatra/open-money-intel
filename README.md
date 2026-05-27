@@ -1,5 +1,7 @@
 # Open Money Intel
 
+**Live: [openmoney.reetbatra.com](https://openmoney.reetbatra.com)** · [3-min Loom walkthrough](https://youtu.be/rSFUsxY8ubw)
+
 A live competitive-intelligence dashboard for onchain payment rails, plus a "Launch in a Box" pipeline that compresses a positioning source-of-truth into a full multi-product asset package via Claude.
 
 Built as a demo for the [Polygon Labs Product Marketing Manager role](https://jobs.ashbyhq.com/polygon-labs/897b111d-f8ae-4759-a58e-75238ec8196d).
@@ -59,6 +61,10 @@ Next.js 16 (App Router, Turbopack) · Tailwind 4 · Vercel AI Gateway (Claude So
 
 `vercel.json` already wires a Monday 08:00 UTC cron at `/api/cron/weekly?send=1`. Push to Vercel, set env vars in the dashboard, ship.
 
-## Status (handoff snapshot)
+## Live infrastructure
 
-Build is clean. All routes return 200. Five pages screenshotted in `/tmp/v2-*.png` from the last build. Git: one initial create-next-app commit, all of the v2 work is uncommitted — review the diff with `git status -uall` before your first commit.
+- Hosting: Vercel (production at `openmoney.reetbatra.com`, also reachable at `open-money-intel.vercel.app`)
+- AI: Vercel AI Gateway → Claude Sonnet 4.6 (~$0.75 per source × 2 sources = ~$1.50 per full regenerate)
+- Database: Neon Postgres (subscribers + digest history)
+- Email: Resend with verified `reetbatra.com` sender — outbound briefings from `briefing@reetbatra.com`
+- Cron: Vercel Cron, Monday 08:00 UTC, triggers `/api/cron/weekly?send=1`
