@@ -7,7 +7,7 @@
 
 ## Before you hit record
 
-Open `https://open-money-intel.vercel.app/` in a fresh tab. Dark mode is on by default. Pre-load these in other tabs but don't show them yet: `/launch`, `/launch/debug`, `/positioning`, `/telemetry`, `/how-it-works`. Critical setup step: go to `/launch`, switch to the Polygon source, click "Generate with Claude" once so the real AI output is cached. Otherwise the recording lands on `/launch` and the pipeline spins for a minute. Close Slack, Linear, mute the system.
+Open `https://open-money-intel.vercel.app/` in a fresh tab. Dark mode is on by default. Pre-load these in other tabs but don't show them yet: `/launch`, `/launch/debug`, `/positioning`, `/telemetry`, `/how-it-works`. Critical setup step: go to `/launch`, switch to the Polygon source, click "Generate with Claude" once so the cached output loads instantly. Otherwise the recording lands on `/launch` and the pipeline spins for a minute. Close Slack, Linear, mute the system.
 
 ---
 
@@ -15,7 +15,7 @@ Open `https://open-money-intel.vercel.app/` in a fresh tab. Dark mode is on by d
 
 *Homepage at `/`. Don't scroll. Let the headline do the work while you talk.*
 
-"Hi, I'm Reet. I ran the Polygon booth at AggSummit during Devcon, and worked at Dabl Club as DevRel. This is a demo I built for the PMM role. The JD describes work that doesn't really exist as a tool yet: AI that compresses positioning into a full launch pack, and measures what works against Polygon's pivot to the Open Money Stack."
+"Hi, I'm Reet. I ran Polygon's booth at AggSummit during Devcon, and was DevRel at Dabl Club. This is a demo I built for the PMM role. The JD basically describes a piece of work that doesn't exist as a tool yet. AI that turns positioning into a full launch pack, and then watches what's actually working and feeds that back. So I built it, around Polygon's pivot from L2 scaling to the Open Money Stack."
 
 ---
 
@@ -23,15 +23,15 @@ Open `https://open-money-intel.vercel.app/` in a fresh tab. Dark mode is on by d
 
 *Scroll to the rails section. Briefly hover the Tron card.*
 
-"This page reads stablecoin supply from DefiLlama and normalizes seven payment rails. Polygon Stack, then Tron, Solana Pay, Base, Circle, TON, BSC. Tron's bigger than the whole Polygon Stack. I wanted that visible up front, any fintech buyer's checking DefiLlama themselves anyway."
+"So this page is pulling stablecoin supply from DefiLlama every hour, across seven payment rails. Polygon Stack at the top, then Tron, Solana Pay, Base, Circle, TON, BSC. Tron's bigger than the whole Polygon Stack right now. I wanted that on page one. Any fintech buyer's going to check DefiLlama themselves anyway."
 
 *Click "Rails" in the nav.*
 
-"Full comparison view. This is the data the weekly briefing reads at run time."
+"Full table here, 7d and 30d changes. This is what the weekly briefing reads at run time."
 
 *Click "Briefing" in the nav.*
 
-"Monday at 8am, a Vercel cron triggers Claude through the AI Gateway. Returns a Zod-validated object, four sections, fails closed if any deviate. Resend mails it out."
+"Every Monday at 8am, a Vercel cron calls Claude through the AI Gateway. Four sections come back as a strict typed object. If any one breaks validation, the whole run fails closed instead of shipping junk. Then Resend mails it out."
 
 ---
 
@@ -39,19 +39,19 @@ Open `https://open-money-intel.vercel.app/` in a fresh tab. Dark mode is on by d
 
 *Click "Launch" in the nav.*
 
-"This is what the JD asks for directly. One YAML file is the positioning source of truth. The pipeline reads it and generates six assets per product: one-pager, landing block, five-email nurture, ten LinkedIn ads, three battlecards, BD talk track. Plus a platform-level master narrative across all four."
+"Okay, this is the part the JD asks for directly. One YAML file holds all the positioning. The pipeline reads it and generates six assets for every product. So that's a one-pager, a landing block, a five-email nurture, ten LinkedIn ads, three battlecards, a BD talk track. And on top of all four products, one more call writes the platform-level master narrative."
 
 *Point at the source switcher.*
 
-"Two sources show the system generalizes. Polygon Open Money Stack, and Circle Stablecoin Network. The pipeline doesn't know about either. It just reads the YAML."
+"I wired up two positioning sources so you can see this generalizes. Polygon's Open Money Stack, and Circle's Stablecoin Network. The pipeline doesn't actually know about either. It just reads the YAML."
 
 *Click into a product. Show the one-pager. Click through the other tabs: landing, emails, ads, battlecards, BD.*
 
-"Every asset comes from a typed generateObject call against a Zod schema. Wrong shape or headline too long, the call fails closed. Forbidden words live in the YAML — 'unlocks', 'revolutionary' — enforced in the system prompt at call time."
+"Every asset gets generated against a strict schema. If the shape's wrong or a headline's too long, the call fails. The voice rules and the forbidden words list both sit in the YAML. So things like 'unlocks', 'revolutionary', that whole bucket of words PMMs are tired of seeing. Those get pulled into the prompt at call time."
 
 *Click "View prompts and schemas", opens `/launch/debug`.*
 
-"Observability sits here. Every prompt, every schema, the token count per call. About seventy-five cents per source on Sonnet 4.6, so a dollar fifty if you regenerate both packs."
+"All the observability is here. Every prompt, every schema, every token count. Sonnet 4.6 runs about seventy-five cents per source. A dollar fifty if you regenerate both packs."
 
 ---
 
@@ -59,11 +59,11 @@ Open `https://open-money-intel.vercel.app/` in a fresh tab. Dark mode is on by d
 
 *Click "Telemetry" in the nav.*
 
-"Most marketing stacks don't have a first-class connection here. Assets fan out across six channels reporting impressions, CTR, conversions, cost per lead. Numbers are seeded from the source hash so the demo's reproducible. Production swaps this for LinkedIn Campaign Manager, GA4, Salesforce."
+"This is the part most marketing setups don't actually close. Assets fan out across six channels, and each one reports impressions, CTR, conversions, cost per lead. To be honest with you, the numbers here are seeded so the demo's reproducible. In production, this layer swaps for LinkedIn Campaign Manager, GA4, Salesforce."
 
 *Scroll to the green YAML edit suggestions.*
 
-"And here's where the loop closes. Worst-CPL asset turns into a concrete YAML edit. The system tells me, landing conversion's low, move the production-readiness FAQ up into differentiators. I apply it, regenerate, ship."
+"And here's where the loop actually closes. The worst-CPL asset turns into a concrete YAML edit. So the system might tell me, hey, landing conversion's low, move the production-readiness FAQ up into differentiators. I apply it, regenerate, ship."
 
 ---
 
@@ -71,7 +71,7 @@ Open `https://open-money-intel.vercel.app/` in a fresh tab. Dark mode is on by d
 
 *Click "Diff" in the nav.*
 
-"Last thing. Same pipeline, both sources, side by side. Polygon's voice ships at 80 percent, forbids 'unlocks'. Circle's is banking-grade clarity, forbids 'degens'. The battlecard for the same competitor comes out completely differently. Consistency stops being a discipline I maintain. It's a property of the system."
+"Last one. Same pipeline, both sources, side by side. Polygon's voice rule says 'ships at 80 percent' and forbids 'unlocks'. Circle's is banking-grade clarity, forbids 'degens'. And then if you look at the battlecards for the same competitor, they come out completely different. So I don't have to maintain consistency by hand across docs and ads and emails anymore. The system just does it."
 
 ---
 
@@ -79,4 +79,4 @@ Open `https://open-money-intel.vercel.app/` in a fresh tab. Dark mode is on by d
 
 *Navigate to `/how-it-works` so the architecture diagram is the last visual.*
 
-"Code's on github.com slash reetbatra slash open-money-intel. Built in about a day. Excited to talk."
+"Code's on github.com slash reetbatra slash open-money-intel. Built in a day. Excited to talk."
