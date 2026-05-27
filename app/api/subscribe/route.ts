@@ -21,15 +21,14 @@ export async function POST(req: Request) {
 
   try {
     const result = await addSubscriber(parsed.email, parsed.source ?? "web");
-    if (!result.created) {
-      return NextResponse.json({ ok: true, message: "You're already on the list." });
-    }
-
     const latest = await getLatestDigest();
+
     if (!latest) {
       return NextResponse.json({
         ok: true,
-        message: "Subscribed. The first briefing lands Monday.",
+        message: result.created
+          ? "Subscribed. The first briefing lands Monday."
+          : "You're on the list. The next briefing lands Monday.",
       });
     }
 
@@ -45,11 +44,12 @@ export async function POST(req: Request) {
     const sent = await sendDigestEmail({ to: parsed.email, subject, html, text });
     if (!sent.ok) console.warn(`welcome send failed to ${parsed.email}: ${sent.error}`);
 
+    const prefix = result.created ? "Subscribed" : "You're on the list";
     return NextResponse.json({
       ok: true,
       message: sent.ok
-        ? "Subscribed. The latest briefing is on its way to your inbox."
-        : "Subscribed. The next briefing lands Monday.",
+        ? `${prefix}. The latest briefing is on its way to your inbox.`
+        : `${prefix}. The next briefing lands Monday.`,
     });
   } catch (err) {
     console.error("subscribe error", err);
