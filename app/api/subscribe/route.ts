@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { addSubscriber } from "@/lib/db/client";
+import { addSubscriber, getLatestDigest } from "@/lib/db/client";
+import { renderDigestHtml, renderDigestText } from "@/lib/email/render";
+import { sendDigestEmail } from "@/lib/email/send";
 
 export const runtime = "nodejs";
 
@@ -19,11 +21,35 @@ export async function POST(req: Request) {
 
   try {
     const result = await addSubscriber(parsed.email, parsed.source ?? "web");
+    if (!result.created) {
+      return NextResponse.json({ ok: true, message: "You're already on the list." });
+    }
+
+    const latest = await getLatestDigest();
+    if (!latest) {
+      return NextResponse.json({
+        ok: true,
+        message: "Subscribed. The first briefing lands Monday.",
+      });
+    }
+
+    const url = new URL(req.url);
+    const siteUrl = `${url.protocol}//${url.host}`;
+    const html = renderDigestHtml(latest.payload as never, { siteUrl }).replace(
+      /\{\{email\}\}/g,
+      encodeURIComponent(parsed.email),
+    );
+    const text = renderDigestText(latest.payload as never, { siteUrl });
+    const subject = `L2 Intel · week of ${new Date(latest.generatedAt).toDateString()}`;
+
+    const sent = await sendDigestEmail({ to: parsed.email, subject, html, text });
+    if (!sent.ok) console.warn(`welcome send failed to ${parsed.email}: ${sent.error}`);
+
     return NextResponse.json({
       ok: true,
-      message: result.created
-        ? "Subscribed. The next briefing lands Monday."
-        : "You're already on the list.",
+      message: sent.ok
+        ? "Subscribed. The latest briefing is on its way to your inbox."
+        : "Subscribed. The next briefing lands Monday.",
     });
   } catch (err) {
     console.error("subscribe error", err);
