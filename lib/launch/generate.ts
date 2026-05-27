@@ -41,29 +41,35 @@ function toneBlock(src: PositioningSource): string {
 
 // ---------- Schemas (one per asset type) ----------
 
+// Tight caps only on UI-load-bearing fields (headlines, CTAs, ad copy
+// where the platform itself has limits). Prose fields get generous caps
+// so Sonnet's natural verbosity doesn't fail schema validation.
+const PROSE_SHORT = 1500;
+const PROSE_LONG = 5000;
+
 const onePagerSchema = z.object({
-  headline: z.string().max(80),
-  subheadline: z.string().max(180),
-  problem: z.string().max(280),
-  solution: z.string().max(320),
+  headline: z.string().max(120),
+  subheadline: z.string().max(240),
+  problem: z.string().max(PROSE_SHORT),
+  solution: z.string().max(PROSE_SHORT),
   features: z
-    .array(z.object({ name: z.string().max(40), body: z.string().max(200) }))
+    .array(z.object({ name: z.string().max(80), body: z.string().max(PROSE_SHORT) }))
     .min(3)
     .max(4),
-  proof: z.array(z.string().max(160)).min(2).max(4),
-  cta: z.object({ primary: z.string().max(40), secondary: z.string().max(40) }),
+  proof: z.array(z.string().max(400)).min(2).max(4),
+  cta: z.object({ primary: z.string().max(60), secondary: z.string().max(60) }),
 });
 
 const landingBlockSchema = z.object({
   hero: z.object({
-    headline: z.string().max(90),
-    subheadline: z.string().max(200),
-    ctaPrimary: z.string().max(28),
-    ctaSecondary: z.string().max(28),
+    headline: z.string().max(140),
+    subheadline: z.string().max(280),
+    ctaPrimary: z.string().max(40),
+    ctaSecondary: z.string().max(40),
   }),
-  features: z.array(z.object({ title: z.string().max(50), body: z.string().max(200) })).min(3).max(4),
-  socialProof: z.string().max(280),
-  faq: z.array(z.object({ question: z.string().max(140), answer: z.string().max(360) })).min(3).max(4),
+  features: z.array(z.object({ title: z.string().max(80), body: z.string().max(PROSE_SHORT) })).min(3).max(4),
+  socialProof: z.string().max(PROSE_SHORT),
+  faq: z.array(z.object({ question: z.string().max(240), answer: z.string().max(PROSE_SHORT) })).min(3).max(4),
 });
 
 const emailNurtureSchema = z.object({
@@ -71,9 +77,9 @@ const emailNurtureSchema = z.object({
     .array(
       z.object({
         day: z.number().int().min(0).max(30),
-        subject: z.string().max(80),
-        preheader: z.string().max(120),
-        body: z.string().min(120).max(1500),
+        subject: z.string().max(120),
+        preheader: z.string().max(200),
+        body: z.string().min(120).max(PROSE_LONG),
       }),
     )
     .length(5),
@@ -83,10 +89,10 @@ const linkedinAdsSchema = z.object({
   variants: z
     .array(
       z.object({
-        angle: z.string().max(40),
-        headline: z.string().max(140),
-        intro: z.string().max(180),
-        cta: z.string().max(28),
+        angle: z.string().max(80),
+        headline: z.string().max(200),
+        intro: z.string().max(400),
+        cta: z.string().max(40),
       }),
     )
     .length(10),
@@ -97,11 +103,11 @@ const battlecardSetSchema = z.object({
     .array(
       z.object({
         competitor: z.string(),
-        short_take: z.string().max(220),
-        why_we_win: z.string().max(280),
-        where_they_win: z.string().max(220),
+        short_take: z.string().max(PROSE_SHORT),
+        why_we_win: z.string().max(PROSE_SHORT),
+        where_they_win: z.string().max(PROSE_SHORT),
         objection_handling: z
-          .array(z.object({ question: z.string().max(140), response: z.string().max(360) }))
+          .array(z.object({ question: z.string().max(240), response: z.string().max(PROSE_SHORT) }))
           .min(2)
           .max(3),
       }),
@@ -111,25 +117,25 @@ const battlecardSetSchema = z.object({
 });
 
 const bdTalkTrackSchema = z.object({
-  opener: z.string().max(500),
-  qualifying_questions: z.array(z.string().max(200)).min(4).max(6),
-  talking_points: z.array(z.string().max(320)).min(4).max(6),
+  opener: z.string().max(PROSE_SHORT),
+  qualifying_questions: z.array(z.string().max(400)).min(4).max(6),
+  talking_points: z.array(z.string().max(PROSE_SHORT)).min(4).max(6),
   common_objections: z
-    .array(z.object({ objection: z.string().max(200), response: z.string().max(500) }))
+    .array(z.object({ objection: z.string().max(400), response: z.string().max(PROSE_SHORT) }))
     .min(3)
     .max(4),
-  close: z.string().max(500),
+  close: z.string().max(PROSE_SHORT),
 });
 
 const platformBundleSchema = z.object({
-  master_narrative: z.string().min(200).max(3500),
-  bundled_pitch: z.string().min(150).max(2500),
+  master_narrative: z.string().min(200).max(PROSE_LONG),
+  bundled_pitch: z.string().min(150).max(PROSE_LONG),
   icp_to_product_map: z
     .array(
       z.object({
         icp_id: z.string(),
         recommended_products: z.array(z.string()).min(1),
-        positioning: z.string().max(2000),
+        positioning: z.string().max(PROSE_LONG),
       }),
     )
     .min(2),
@@ -139,8 +145,8 @@ const platformBundleSchema = z.object({
         product_id: z.string(),
         product_name: z.string(),
         primary_icp: z.string(),
-        when_to_lead_with_it: z.string().max(1500),
-        primary_competitor: z.string().max(80),
+        when_to_lead_with_it: z.string().max(PROSE_LONG),
+        primary_competitor: z.string().max(120),
       }),
     )
     .min(2),
