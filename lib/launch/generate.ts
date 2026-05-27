@@ -129,7 +129,7 @@ const platformBundleSchema = z.object({
       z.object({
         icp_id: z.string(),
         recommended_products: z.array(z.string()).min(1),
-        positioning: z.string().max(800),
+        positioning: z.string().max(2000),
       }),
     )
     .min(2),
@@ -139,7 +139,7 @@ const platformBundleSchema = z.object({
         product_id: z.string(),
         product_name: z.string(),
         primary_icp: z.string(),
-        when_to_lead_with_it: z.string().max(500),
+        when_to_lead_with_it: z.string().max(1500),
         primary_competitor: z.string().max(80),
       }),
     )
